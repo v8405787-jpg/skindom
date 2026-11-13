@@ -1,0 +1,269 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>СкинДом</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700&family=Russo+One&display=swap">
+<style>
+/* Макет: липкая шапка с балансом и корзиной, плашка «демо», строка фильтров, сетка карточек; корзина выезжает справа. Тёмная тема задумана намеренно. */
+:root{
+  --bg:#0f1114;
+  --surface:#171a1f;
+  --surface2:#1e2229;
+  --line:#2a2f38;
+  --ink:#e8eaed;
+  --muted:#8d96a3;
+  --accent:#ff7a1a;
+  --accent-ink:#1a0e02;
+  --ok:#4cc38a;
+  --bad:#ef5b5b;
+  --font-display:'Russo One','Arial Black',Impact,sans-serif;
+  --font-body:'Manrope',system-ui,-apple-system,'Segoe UI',sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box;}
+html,body{background:var(--bg);}
+body{margin:0;color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.45;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 40px;}
+.in{max-width:1180px;margin:0 auto;}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);border-bottom:1px solid var(--line);}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--bg);}
+.bar{display:flex;align-items:center;gap:12px 20px;flex-wrap:wrap;padding-block:12px;}
+.logo{font-family:var(--font-display);font-size:24px;letter-spacing:.04em;margin-right:auto;}
+.logo span{color:var(--accent);}
+.tabs{display:flex;gap:4px;}
+.tab{background:none;border:0;color:var(--muted);font:inherit;font-weight:700;padding:8px 12px;cursor:pointer;border-bottom:2px solid transparent;}
+.tab[aria-selected=true]{color:var(--ink);border-bottom-color:var(--accent);}
+.bal{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);padding:6px 6px 6px 12px;}
+.bal b{font-variant-numeric:tabular-nums;}
+button{font:inherit;cursor:pointer;}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+.btn{background:var(--accent);color:var(--accent-ink);border:0;font-weight:700;padding:8px 14px;}
+.btn:hover{filter:brightness(1.1);}
+.btn:disabled{background:var(--line);color:var(--muted);cursor:default;filter:none;}
+.btn.ghost{background:var(--surface2);color:var(--ink);border:1px solid var(--line);}
+.btn.sm{padding:5px 9px;font-size:13px;}
+.cartb{position:relative;}
+.cartb i{font-style:normal;background:var(--accent);color:var(--accent-ink);font-size:12px;font-weight:700;padding:0 6px;margin-left:6px;}
+.demo{background:#2a1c0c;border-bottom:1px solid #553412;color:#ffc88f;font-size:13px;padding:8px 0;}
+.topup{display:none;gap:8px;flex-wrap:wrap;padding-block:10px;border-top:1px solid var(--line);}
+.topup.on{display:flex;}
+.filters{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1.4fr;gap:10px;padding-block:18px;align-items:end;}
+.filters label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;min-width:0;}
+input[type=search],select{background:var(--surface);color:var(--ink);border:1px solid var(--line);padding:9px 10px;font:inherit;width:100%;}
+input[type=range]{accent-color:var(--accent);width:100%;}
+.count{color:var(--muted);font-size:13px;padding-bottom:10px;}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;}
+.card{background:var(--surface);border:1px solid var(--line);display:flex;flex-direction:column;position:relative;min-width:0;}
+.card::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:var(--rc);}
+.art{background:radial-gradient(ellipse at 50% 40%,var(--surface2),var(--surface) 75%);padding:12px 10px 4px;}
+.art svg{display:block;width:100%;height:auto;}
+.meta{padding:10px 14px 16px;display:flex;flex-direction:column;gap:3px;flex:1;}
+.wp{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.06em;}
+.nm{font-weight:700;font-size:16px;overflow-wrap:anywhere;}
+.wr{color:var(--muted);font-size:12px;}
+.rar{font-size:12px;color:var(--rc);font-weight:700;}
+.pr{margin-top:auto;padding-top:10px;display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.pr b{font-size:17px;font-variant-numeric:tabular-nums;}
+.empty{grid-column:1/-1;color:var(--muted);padding:40px 0;text-align:center;}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(400px,100vw);background:var(--surface);border-left:1px solid var(--line);z-index:50;
+  display:flex;flex-direction:column;transform:translateX(105%);transition:transform .25s;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);}
+.drawer.on{transform:none;}
+.veil{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:40;}
+.veil[hidden]{display:none!important;}
+.dh{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid var(--line);font-family:var(--font-display);font-size:18px;}
+.dl{flex:1;overflow:auto;padding:8px 16px;}
+.row{display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line);}
+.row .t{width:84px;flex:none;}
+.row .t svg{width:100%;height:auto;display:block;}
+.row .x{flex:1;min-width:0;}
+.row .x div:first-child{font-weight:700;overflow-wrap:anywhere;}
+.df{padding:14px 16px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:10px;}
+.tot{display:flex;justify-content:space-between;font-size:17px;}
+.err{color:var(--bad);font-size:13px;min-height:18px;}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:var(--ink);color:#111;
+  padding:10px 16px;font-weight:700;opacity:0;pointer-events:none;transition:.25s;z-index:60;max-width:calc(100vw - 32px);}
+.toast.on{opacity:1;transform:translate(-50%,0);}
+footer{color:var(--muted);font-size:12px;border-top:1px solid var(--line);margin-top:36px;padding-top:16px;}
+@media (max-width:860px){.filters{grid-template-columns:1fr 1fr;}.filters label:first-child,.filters label:last-child{grid-column:1/-1;}}
+@media (prefers-reduced-motion:reduce){.drawer,.toast{transition:none;}}
+</style>
+
+<header>
+  <div class="in">
+    <div class="bar">
+      <div class="logo">Скин<span>Дом</span></div>
+      <div class="tabs" role="tablist">
+        <button class="tab" role="tab" id="tabShop" aria-selected="true">Магазин</button>
+        <button class="tab" role="tab" id="tabInv" aria-selected="false">Мои скины <span id="invN"></span></button>
+      </div>
+      <div class="bal">Баланс <b id="bal"></b><button class="btn sm" id="topBtn">Пополнить</button></div>
+      <button class="btn ghost cartb" id="cartBtn">Корзина<i id="cartN">0</i></button>
+    </div>
+    <div class="topup" id="topup">
+      <span style="color:var(--muted);align-self:center">Виртуальное пополнение:</span>
+      <button class="btn ghost sm" data-add="1000">+1 000 ₽</button>
+      <button class="btn ghost sm" data-add="5000">+5 000 ₽</button>
+      <button class="btn ghost sm" data-add="25000">+25 000 ₽</button>
+      <button class="btn ghost sm" data-add="100000">+100 000 ₽</button>
+    </div>
+  </div>
+</header>
+<div class="demo"><div class="in"><b>Демо-проект.</b> Деньги и скины здесь виртуальные, реальные платежи не принимаются и ничего не выдаётся в Steam. Цены выдуманы, рисунки упрощённые. Сайт не связан с Valve.</div></div>
+
+<main class="in">
+  <section id="shop">
+    <div class="filters">
+      <label>Поиск<input type="search" id="q" placeholder="AK-47, AWP, Fade…"></label>
+      <label>Тип<select id="fType"><option value="">Все</option><option>Винтовка</option><option>Снайперка</option><option>Пистолет</option><option>Нож</option></select></label>
+      <label>Редкость<select id="fRar"><option value="">Любая</option></select></label>
+      <label>Сортировка<select id="fSort"><option value="pa">Сначала дешёвые</option><option value="pd">Сначала дорогие</option><option value="rd">По редкости</option><option value="n">По названию</option></select></label>
+      <label><span>Цена до: <b id="pMaxL" style="color:var(--ink)"></b></span><input type="range" id="pMax" min="0" max="100" value="100"></label>
+    </div>
+    <div class="count" id="count"></div>
+    <div class="grid" id="grid"></div>
+  </section>
+  <section id="inv" hidden>
+    <div class="count" id="invCount" style="padding-top:18px"></div>
+    <div class="grid" id="invGrid"></div>
+  </section>
+  <footer>СкинДом: учебный демо-магазин. Для реальной торговли нужны сервер, платёжная система и интеграция со Steam, которых здесь нет.</footer>
+</main>
+
+<div class="veil" id="veil" hidden></div>
+<aside class="drawer" id="drawer" aria-label="Корзина">
+  <div class="dh">Корзина<button class="btn ghost sm" id="closeCart">Закрыть</button></div>
+  <div class="dl" id="cartList"></div>
+  <div class="df">
+    <div class="tot"><span>Итого</span><b id="total"></b></div>
+    <div class="err" id="err"></div>
+    <button class="btn" id="buy">Купить за виртуальные рубли</button>
+  </div>
+</aside>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+const RAR=[
+  {n:'Армейское качество',c:'#4b69ff'},{n:'Запрещённое',c:'#8847ff'},{n:'Засекреченное',c:'#d32ce6'},
+  {n:'Тайное',c:'#eb4b4b'},{n:'Особый предмет',c:'#e4ae39'}
+];
+const WEAR=['Прямо с завода','Немного поношенное','После полевых испытаний','Поношенное','Закалённое в боях'];
+/* id, оружие, скин, тип, редкость, износ, цена ₽, цвет 1, цвет 2, узор */
+const S=[
+ [1,'AK-47','Redline','Винтовка',1,2,4200,'#b3191c','#2a0c0e','stripes'],
+ [2,'AWP','Asiimov','Снайперка',3,3,9800,'#f4f4f4','#ff6a1a','stripes'],
+ [3,'M4A4','Neo-Noir','Винтовка',3,1,3900,'#2b2b3a','#e63e8a','camo'],
+ [4,'Glock-18','Fade','Пистолет',3,0,21000,'#ffb347','#e5398f','grad'],
+ [5,'USP-S','Kill Confirmed','Пистолет',3,1,6500,'#1e1e22','#e2b43a','dots'],
+ [6,'Desert Eagle','Blaze','Пистолет',2,0,17500,'#ff7a1a','#a01a00','grad'],
+ [7,'AK-47','Vulcan','Винтовка',2,2,8800,'#e8e8ea','#2d6fe0','stripes'],
+ [8,'M4A1-S','Cyrex','Винтовка',2,1,1900,'#f2f2f2','#3a8fd9','stripes'],
+ [9,'AWP','Dragon Lore','Снайперка',4,3,520000,'#7d8b3a','#2c3a14','camo'],
+ [10,'Karambit','Doppler','Нож',4,0,64000,'#1f7de0','#8b2fd0','grad'],
+ [11,'Butterfly Knife','Fade','Нож',4,0,98000,'#ffaa33','#d6336c','grad'],
+ [12,'AWP','Hyper Beast','Снайперка',3,2,5600,'#35d07f','#7a3df0','camo'],
+ [13,'AK-47','Asiimov','Винтовка',3,3,3100,'#f4f4f4','#d9531e','stripes'],
+ [14,'Glock-18','Water Elemental','Пистолет',2,1,780,'#39b6ff','#1b3d99','grad'],
+ [15,'USP-S','Orion','Пистолет',3,0,3400,'#f4f4f4','#1f6fd0','stripes'],
+ [16,'Desert Eagle','Printstream','Пистолет',3,1,7600,'#f0f0f0','#202228','stripes'],
+ [17,'AK-47','Bloodsport','Винтовка',3,1,6900,'#e9e9ea','#c61c24','stripes'],
+ [18,'AWP','Neo-Noir','Снайперка',3,2,2800,'#1b1b26','#f0488f','camo'],
+ [19,'M9 Bayonet','Tiger Tooth','Нож',4,0,47000,'#f0b73a','#c4621a','camo'],
+ [20,'Glock-18','Gamma Doppler','Пистолет',2,0,4300,'#39d7b0','#1d4d5e','grad'],
+ [21,'P250','Asiimov','Пистолет',2,3,540,'#f4f4f4','#e0661a','stripes'],
+ [22,'M4A1-S','Printstream','Винтовка',3,0,12500,'#f0f0f0','#22252c','stripes'],
+ [23,'Flip Knife','Marble Fade','Нож',4,0,36000,'#ff5a3d','#3d7bff','grad'],
+ [24,'M4A4','Howl','Винтовка',4,1,310000,'#d94a1d','#2b1208','camo']
+];
+const SHAPE={
+  'Винтовка':'M6 36 L52 30 L112 30 L134 26 L196 29 L196 37 L134 38 L112 44 L98 72 L84 72 L84 48 L58 48 L34 64 L22 60 L32 46 L6 46Z',
+  'Снайперка':'M4 38 L70 33 L96 33 L100 22 L140 22 L144 33 L198 35 L198 40 L144 41 L110 46 L100 70 L86 70 L84 50 L58 50 L34 66 L22 62 L32 48 L4 48Z',
+  'Пистолет':'M40 22 L156 22 L162 30 L162 38 L112 38 L102 50 L98 72 L70 72 L74 44 L68 38 L40 38Z',
+  'Нож':'M14 44 L62 38 Q120 8 192 30 Q130 36 68 52 L16 58Z'
+};
+function art(s,uid){
+  const id=uid+s[0],c1=s[7],c2=s[8],p=s[9],d=SHAPE[s[3]];
+  let ov='';
+  if(p==='stripes')for(let i=-6;i<24;i++)ov+='<line x1="'+(i*10)+'" y1="80" x2="'+(i*10+40)+'" y2="0" stroke="'+c2+'" stroke-width="'+(3+(i%3))+'" opacity=".7"/>';
+  if(p==='camo')for(let i=0;i<22;i++)ov+='<ellipse cx="'+((i*37)%200)+'" cy="'+((i*23)%80)+'" rx="'+(8+(i%4)*4)+'" ry="'+(5+(i%3)*3)+'" fill="'+c2+'" opacity=".6"/>';
+  if(p==='dots')for(let i=0;i<40;i++)ov+='<circle cx="'+((i*29)%200)+'" cy="'+((i*17)%80)+'" r="'+(2+(i%3))+'" fill="'+c2+'" opacity=".75"/>';
+  return '<svg viewBox="0 0 200 80" role="img" aria-label="'+s[1]+' | '+s[2]+'">'+
+   '<defs><linearGradient id="g'+id+'" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="'+c1+'"/><stop offset="1" stop-color="'+(p==='grad'?c2:c1)+'"/></linearGradient>'+
+   '<clipPath id="c'+id+'"><path d="'+d+'"/></clipPath></defs>'+
+   '<path d="'+d+'" fill="url(#g'+id+')"/><g clip-path="url(#c'+id+')">'+ov+'<rect x="0" y="0" width="200" height="30" fill="#fff" opacity=".08"/></g>'+
+   '<path d="'+d+'" fill="none" stroke="rgba(0,0,0,.55)" stroke-width="1.5" stroke-linejoin="round"/></svg>';
+}
+const $=id=>document.getElementById(id);
+const fmt=n=>Math.round(n).toLocaleString('ru-RU')+' ₽';
+const byId={};S.forEach(s=>byId[s[0]]=s);
+const MAXP=Math.max.apply(null,S.map(s=>s[6]));
+let st={bal:50000,cart:[],own:[]};
+try{const r=JSON.parse(localStorage.getItem('skindom')||'null');if(r&&typeof r.bal==='number')st={bal:r.bal,cart:(r.cart||[]).filter(i=>byId[i]),own:(r.own||[]).filter(i=>byId[i])};}catch(e){}
+function save(){try{localStorage.setItem('skindom',JSON.stringify(st));}catch(e){}}
+let tt;function toast(t){const e=$('toast');e.textContent=t;e.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>e.classList.remove('on'),2200);}
+
+RAR.forEach((r,i)=>{const o=document.createElement('option');o.value=i;o.textContent=r.n;$('fRar').appendChild(o);});
+/* цена по логарифмической шкале: 0..100 → 500..макс */
+const PMIN=500;
+const rp=v=>Math.round(PMIN*Math.pow(MAXP/PMIN,v/100)/10)*10;
+
+function card(s,mode){
+  const r=RAR[s[4]],owned=st.own.includes(s[0]),inCart=st.cart.includes(s[0]);
+  let btn;
+  if(mode==='inv')btn='<button class="btn ghost sm" data-sell="'+s[0]+'">Продать за '+fmt(s[6]*.85)+'</button>';
+  else if(owned)btn='<button class="btn ghost sm" disabled>Уже у вас</button>';
+  else if(inCart)btn='<button class="btn ghost sm" data-rm="'+s[0]+'">В корзине ✓</button>';
+  else btn='<button class="btn sm" data-add="'+s[0]+'">В корзину</button>';
+  return '<article class="card" style="--rc:'+r.c+'"><div class="art">'+art(s,mode==='inv'?'i':'k')+'</div><div class="meta">'+
+    '<div class="wp">'+s[1]+'</div><div class="nm">'+s[2]+'</div><div class="rar">'+r.n+'</div><div class="wr">'+WEAR[s[5]]+'</div>'+
+    '<div class="pr">'+(mode==='inv'?'<span class="wr">Цена '+fmt(s[6])+'</span>':'<b>'+fmt(s[6])+'</b>')+btn+'</div></div></article>';
+}
+function renderShop(){
+  const q=$('q').value.trim().toLowerCase(),ty=$('fType').value,ra=$('fRar').value,mp=rp(+$('pMax').value);
+  $('pMaxL').textContent=+$('pMax').value>=100?'любая':fmt(mp);
+  let a=S.filter(s=>(!q||(s[1]+' '+s[2]).toLowerCase().includes(q))&&(!ty||s[3]===ty)&&(ra===''||s[4]===+ra)&&(+$('pMax').value>=100||s[6]<=mp));
+  const so=$('fSort').value;
+  a.sort((x,y)=>so==='pa'?x[6]-y[6]:so==='pd'?y[6]-x[6]:so==='rd'?y[4]-x[4]||y[6]-x[6]:(x[1]+x[2]).localeCompare(y[1]+y[2]));
+  $('count').textContent='Найдено: '+a.length+' из '+S.length;
+  $('grid').innerHTML=a.length?a.map(s=>card(s,'shop')).join(''):'<div class="empty">Ничего не найдено. Измените фильтры.</div>';
+}
+function renderInv(){
+  const a=st.own.map(i=>byId[i]);
+  $('invN').textContent=a.length?'('+a.length+')':'';
+  const sum=a.reduce((t,s)=>t+s[6],0);
+  $('invCount').textContent=a.length?'Скинов: '+a.length+' · оценка '+fmt(sum):'';
+  $('invGrid').innerHTML=a.length?a.map(s=>card(s,'inv')).join(''):'<div class="empty">Пока пусто. Купите что-нибудь в магазине.</div>';
+}
+function renderCart(){
+  const a=st.cart.map(i=>byId[i]),t=a.reduce((x,s)=>x+s[6],0);
+  $('cartN').textContent=a.length;$('total').textContent=fmt(t);$('buy').disabled=!a.length;
+  $('cartList').innerHTML=a.length?a.map(s=>'<div class="row"><div class="t">'+art(s,'r')+'</div><div class="x"><div>'+s[1]+' | '+s[2]+'</div><div class="wr">'+fmt(s[6])+'</div></div><button class="btn ghost sm" data-rm="'+s[0]+'">Убрать</button></div>').join(''):'<div class="empty" style="padding:30px 0">Корзина пуста</div>';
+}
+function renderAll(){$('bal').textContent=fmt(st.bal);renderShop();renderInv();renderCart();save();}
+
+document.addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b)return;
+  if(b.dataset.add&&b.closest('.topup')){st.bal+=+b.dataset.add;toast('Баланс пополнен (виртуально)');renderAll();return;}
+  if(b.dataset.add){const i=+b.dataset.add;if(!st.cart.includes(i)&&!st.own.includes(i))st.cart.push(i);toast('Добавлено в корзину');renderAll();return;}
+  if(b.dataset.rm){st.cart=st.cart.filter(i=>i!==+b.dataset.rm);$('err').textContent='';renderAll();return;}
+  if(b.dataset.sell){const i=+b.dataset.sell;st.own=st.own.filter(x=>x!==i);st.bal+=byId[i][6]*.85;toast('Продано за '+fmt(byId[i][6]*.85));renderAll();return;}
+});
+$('topBtn').onclick=()=>$('topup').classList.toggle('on');
+function openCart(o){$('drawer').classList.toggle('on',o);$('veil').hidden=!o;$('err').textContent='';}
+$('cartBtn').onclick=()=>openCart(true);$('closeCart').onclick=()=>openCart(false);$('veil').onclick=()=>openCart(false);
+document.addEventListener('keydown',e=>{if(e.key==='Escape')openCart(false);});
+$('buy').onclick=()=>{
+  const a=st.cart.map(i=>byId[i]),t=a.reduce((x,s)=>x+s[6],0);
+  if(t>st.bal){$('err').textContent='Не хватает '+fmt(t-st.bal)+'. Пополните виртуальный баланс.';return;}
+  st.bal-=t;st.own=st.own.concat(st.cart);st.cart=[];renderAll();openCart(false);toast('Покупка оформлена. Скины в разделе «Мои скины»');
+};
+function tab(inv){
+  $('shop').hidden=inv;$('inv').hidden=!inv;
+  $('tabShop').setAttribute('aria-selected',String(!inv));$('tabInv').setAttribute('aria-selected',String(inv));
+}
+$('tabShop').onclick=()=>tab(false);$('tabInv').onclick=()=>tab(true);
+['q','fType','fRar','fSort','pMax'].forEach(id=>$(id).addEventListener('input',renderShop));
+renderAll();
+})();
+</script>
+
+</body></html>
